@@ -10,7 +10,7 @@ function App() {
 
   return (
     <div className="App">
-      <h3>Agility widget test fkjlsdgkg 3333A</h3>
+      <h3>Agility widget test</h3>
       <p>This is just proof that we can add a widget and work on it and make something cool</p>
       <button
         onClick={() => {
