@@ -10,14 +10,14 @@ function App() {
 
   return (
     <div className="App">
-      <h3>Agility widget test</h3>
-      <p>This is just proof that we can add a widget and work on it and make something cool</p>
+      <h3>No sticky selected</h3>
+      <p>Select the sticky to convert it to Agility work item.</p>
       <button
         onClick={() => {
           parent?.postMessage?.({ pluginMessage: "close" }, "*");
         }}
       >
-        Close
+        Convert 1 sticky
       </button>
     </div>
   );

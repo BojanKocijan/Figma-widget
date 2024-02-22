@@ -16,7 +16,7 @@ function Widget() {
       }}
       fill="#FFF"
       stroke="#C1C6CD"
-      cornerRadius={16}
+      cornerRadius={8}
       width={346}
       height={280}
     >
