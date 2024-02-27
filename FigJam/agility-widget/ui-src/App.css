@@ -16,19 +16,3 @@
   color: #667385;
   text-align: center;
 }
-
-
-.App button{
-  align-items: center;
-  background-color: #F3F5F6;
-  color: #667385;
-  border: none;
-  height: auto;
-  width: auto;
-  padding: 8px 16px 8px 16px;
-}
-
-.App button :hover{
-  background-color:white;
-  color: #3B485C;
-}

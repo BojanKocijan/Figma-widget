@@ -42,11 +42,19 @@ function Widget() {
         verticalAlignItems="center"
 // Click event for calling API and bringing the UI for choosing the story //
         onClick={async () => {
+          const accessCode = await figma.clientStorage.getAsync("accessCode");
+          const agilityUrl = await figma.clientStorage.getAsync("agilityUrl");
           await new Promise((resolve) => {
             figma.showUI(__html__);
+            figma.ui.postMessage({ accessCode, agilityUrl });
             figma.ui.on("message", (msg) => {
               if (msg === "Agility work item imported") {
                 figma.notify("Agility work item imported");
+              }
+              if(msg.accessCode) {
+                const { accessCode, agilityUrl } = msg;
+                figma.clientStorage.setAsync("accessCode", accessCode);
+                figma.clientStorage.setAsync("agilityUrl", agilityUrl);
               }
               if (msg === "close") {
                 figma.closePlugin();
@@ -94,9 +102,17 @@ function Widget() {
 
 // CLick event for calling the api and fucntion //
         onClick={async () => {
+          const accessCode = await figma.clientStorage.getAsync("accessCode");
+          const agilityUrl = await figma.clientStorage.getAsync("agilityUrl");
           await new Promise((resolve) => {
             figma.showUI(__html__);
+            figma.ui.postMessage({ accessCode, agilityUrl });
             figma.ui.on("message", (msg) => {
+              if(msg.accessCode) {
+                const { accessCode, agilityUrl } = msg;
+                figma.clientStorage.setAsync("accessCode", accessCode);
+                figma.clientStorage.setAsync("agilityUrl", agilityUrl);
+              }
               if (msg === "Agility work item imported") {
                 figma.notify("Agility work item imported");
               }
@@ -118,7 +134,7 @@ function Widget() {
           fontFamily="Lato"
           fontSize={14}
           letterSpacing={0.42}
-          
+
         >
           Turn stickies into
           the work item
