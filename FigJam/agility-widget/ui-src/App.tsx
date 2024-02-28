@@ -1,70 +1,39 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-
-function agilityAPI(baseUrl = '', accessCode:string) {
-
-  async function postData(path = '', data = {}) {
-    const response = await fetch(`${baseUrl}${path}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessCode}`
-      },
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  }
-
-  async function get(path = '') {
-    const response = await fetch(`${baseUrl}${path}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    if (response.status !== 200) {
-      throw new Error('Invalid access code or Agility URL');
-    }
-    return response.json();
-  }
-
-  return {
-    asset: async (data:any) => {
-      return postData('/api/asset', data);
-    },
-    query: async (data:any) => {
-      return postData('/query.v1', data);
-    },
-    meta: async () => {
-      return get('/meta.v1');
-    }
-  }
-}
+import createAgilityAPIInstance from "./agilityAPI";
 
 function App() {
   const [accessCode, setAccessCode] = useState("");
   const [agilityUrl, setAgilityUrl] = useState("");
+  const [selectedCount, setSelectedCount] = useState(0);
   const [connectionValidated, setConnectionValidated] = useState(false);
 
   let agilityAPIInstance:any;
 
   useEffect(() => {
     (globalThis as any).onmessage = (event:any) => {
-      if (event.data.pluginMessage.accessCode) {
-        const { accessCode, agilityUrl } = event.data.pluginMessage;
-        setAccessCode(accessCode);
-        setAgilityUrl(agilityUrl);
-        agilityAPIInstance = agilityAPI(agilityUrl, accessCode);
-        validateConnection(agilityAPIInstance, setConnectionValidated);
-      }
-      if (event.data.pluginMessage.type === "selectionchange") {
-
+      const type = event.data.pluginMessage.type;
+      let selection: any[];
+      switch(type) {
+        case "init":
+          const { accessCode, agilityUrl } = event.data.pluginMessage;
+          selection = event.data.pluginMessage.selection;
+          setAccessCode(accessCode);
+          setAgilityUrl(agilityUrl);
+          setSelectedCount(selection.length);
+          agilityAPIInstance = createAgilityAPIInstance(agilityUrl, accessCode);
+          validateConnection(agilityAPIInstance, setConnectionValidated);
+          break;
+        case "selectionchange":
+          selection = event.data.pluginMessage.selection;
+          setSelectedCount(selection.length);
+          break;
       }
     }
   }, []);
 
   if (accessCode && agilityUrl) {
-    agilityAPIInstance = agilityAPI(agilityUrl, accessCode);
+    agilityAPIInstance = createAgilityAPIInstance(agilityUrl, accessCode);
   }
 
   // useEffect(() => {
@@ -114,13 +83,18 @@ function App() {
       </div>
     );
   }
+  const selectedText = selectedCount > 0 ?
+    (selectedCount === 1 ? "1 sticky selected" : `${selectedCount} stickies selected`) : "No sticky selected";
   return (
     <div className="App">
-      <div>{accessCode}</div>
-      <div>{agilityUrl}</div>
-      <h3>No sticky selected</h3>
+      <h3>
+        {
+          selectedText
+        }
+      </h3>
       <p>Select the sticky to convert it to Agility work item.</p>
       <button
+        disabled={selectedCount !== 1}
         onClick={() => {
           parent?.postMessage?.({ pluginMessage: "close" }, "*");
         }}
