@@ -101,6 +101,17 @@ function App() {
       >
         Convert 1 sticky
       </button>
+      <div>
+      <button
+        onClick={() => {
+          setAccessCode("");
+          setAgilityUrl("");
+          parent?.postMessage?.({ pluginMessage: "logout" }, "*");
+        }}
+      >
+        Logout
+      </button>
+      </div>
     </div>
   );
 }
